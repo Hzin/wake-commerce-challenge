@@ -19,6 +19,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
+    defaults:
+      run:
+        working-directory: ./WakeChallenge/WakeChallenge/
 
     steps:
     - uses: actions/checkout@v3
@@ -26,9 +29,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Set working directory
-      working-directory: ./WakeChallenge/WakeChallenge/
 
     - name: Install dependencies
       run: dotnet restore
