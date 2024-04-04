@@ -28,7 +28,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Set directory
-      run: cd .\WakeChallenge\WakeChallenge\
+      run: cd ./WakeChallenge/WakeChallenge/
 
     - name: Install dependencies
       run: dotnet restore
