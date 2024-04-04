@@ -27,8 +27,11 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Set working directory
+      working-directory: ./WakeChallenge/WakeChallenge/
+
     - name: Install dependencies
-      run: dotnet restore ./WakeChallenge/WakeChallenge/WakeChallenge.API.csproj
+      run: dotnet restore
       
     - name: Build
       run: dotnet build --configuration Release --no-restore
