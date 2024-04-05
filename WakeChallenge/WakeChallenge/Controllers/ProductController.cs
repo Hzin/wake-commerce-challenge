@@ -16,26 +16,53 @@ namespace WakeChallenge.Controllers
                 _context = context;
             }
 
-            [HttpGet]
-            public async Task<ActionResult<List<Product>>> Get()
+        public enum ProductOrderBy
+        {
+            Name,
+            Value,
+            Stock
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Product>>> Get(
+            [FromQuery] string? name,
+            [FromQuery] ProductOrderBy? orderBy)
+        {
+            try
             {
-                try
+                var query = _context.Products.AsQueryable();
+                if (!string.IsNullOrEmpty(name))
                 {
-                    var products = await _context.Products.ToListAsync();
-                    if (products == null)
+                    query = query.Where(p => p.Name.ToLower().Contains(name.ToLower()));
+                }
+
+                if (orderBy.HasValue)
+                {
+                    query = orderBy switch
                     {
-                        return StatusCode(204, products);
-                    }
-
-                    return Ok(products);
+                        ProductOrderBy.Name => query.OrderBy(p => p.Name),
+                        ProductOrderBy.Value => query.OrderBy(p => p.Value),
+                        ProductOrderBy.Stock => query.OrderBy(p => p.Stock),
+                        _ => query // Caso padrão, não faz nada
+                    };
                 }
-                catch (Exception e)
+
+                var products = await query.ToListAsync();
+                if (products == null)
                 {
-                    return NotFound(e.Message);
+                    return StatusCode(204, products);
                 }
-            }
 
-            [HttpGet("{productId}")]
+                return Ok(products);
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+
+        [HttpGet("{productId}")]
             public async Task<ActionResult<Product>> Get([FromRoute] int productId)
             {
                 try
@@ -54,26 +81,6 @@ namespace WakeChallenge.Controllers
                     return NotFound(e.Message);
                 }
             }
-
-            /*[HttpGet("consultar")]
-            public async Task<ActionResult<Product>> Consulta([FromHeader(Name = "X-Page-Index")] string? pageIndex, [FromHeader(Name = "X-Page-Size")] string? pageSize, string? nome, bool? ativo)
-            {
-                try
-                {
-                    var page = new PageParameters(pageIndex, pageSize);
-                    var product = await _context.GetByFilterAsync(page, nome, ativo);
-                    if (product == null)
-                    {
-                        return StatusCode(204, product);
-                    }
-
-                    return Ok(product);
-                }
-                catch (Exception e)
-                {
-                    return NotFound(e.Message);
-                }
-            }*/
 
             [HttpPost]
             public async Task<ActionResult<Product>> Create([FromBody] Product product)
