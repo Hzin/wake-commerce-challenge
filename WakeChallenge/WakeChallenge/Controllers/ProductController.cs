@@ -43,7 +43,7 @@ namespace WakeChallenge.Controllers
                         ProductOrderBy.Name => query.OrderBy(p => p.Name),
                         ProductOrderBy.Value => query.OrderBy(p => p.Value),
                         ProductOrderBy.Stock => query.OrderBy(p => p.Stock),
-                        _ => query // Caso padrão, não faz nada
+                        _ => query // Caso padrï¿½o, nï¿½o faz nada
                     };
                 }
 
@@ -89,7 +89,7 @@ namespace WakeChallenge.Controllers
                 {
                     var productExists = await _context.Products.FirstOrDefaultAsync(p => p.Name == product.Name);
                     if (productExists != null)
-                        return BadRequest(new { message = $"Produto {product.Name} já está cadastrado." });
+                        return BadRequest(new { message = $"Produto {product.Name} jï¿½ estï¿½ cadastrado." });
 
                     _context.Add(product);
                     await _context.SaveChangesAsync();
@@ -108,7 +108,7 @@ namespace WakeChallenge.Controllers
                 try
                 {
                     if (productId != product.ProductId)
-                        throw new Exception("As informações enviadas estão divergentes.");
+                        throw new Exception("As informaï¿½ï¿½es enviadas estï¿½o divergentes.");
 
                     _context.Update(product);
                     await _context.SaveChangesAsync();
@@ -127,6 +127,10 @@ namespace WakeChallenge.Controllers
                 try
                 {
                     var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+                
+                if (product == null)
+                    return NotFound();
+
                     _context.Products.Remove(product);
                     await _context.SaveChangesAsync();
 
