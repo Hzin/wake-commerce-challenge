@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WakeChallenge.INFRASTRUCTUR
 		{74544CB6-B1F4-40F1-A121-3DB8DEF104E5} = {74544CB6-B1F4-40F1-A121-3DB8DEF104E5}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WakeChallenge.TEST", "WakeChallenge.TEST\WakeChallenge.TEST.csproj", "{489EA4DE-C05F-4A0C-BBBE-323186FD79B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WakeChallenge.TEST", "WakeChallenge.TEST\WakeChallenge.TEST.csproj", "{489EA4DE-C05F-4A0C-BBBE-323186FD79B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

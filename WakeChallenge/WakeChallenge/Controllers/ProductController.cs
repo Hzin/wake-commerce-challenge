@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WakeChallenge.API.Models;
 using WakeChallenge.CORE.Entities;
 using WakeChallenge.INFRASTRUCTURE.Context;
 
@@ -9,12 +10,12 @@ namespace WakeChallenge.Controllers
     [Route("produtos")]
     public class ProductController : ControllerBase
     {
-            private ApplicationDbContext _context;
+        private ApplicationDbContext _context;
 
-            public ProductController(ApplicationDbContext context)
-            {
-                _context = context;
-            }
+        public ProductController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         public enum ProductOrderBy
         {
@@ -63,79 +64,91 @@ namespace WakeChallenge.Controllers
 
 
         [HttpGet("{productId}")]
-            public async Task<ActionResult<Product>> Get([FromRoute] int productId)
+        public async Task<ActionResult<Product>> Get([FromRoute] int productId)
+        {
+            try
             {
-                try
+                var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+
+                if (product == null)
                 {
-                    var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
-
-                    if (product == null)
-                    {
-                        return StatusCode(204, product);
-                    }
-
-                    return Ok(product);
+                    return StatusCode(204, product);
                 }
-                catch (Exception e)
-                {
-                    return NotFound(e.Message);
-                }
-            }
-
-            [HttpPost]
-            public async Task<ActionResult<Product>> Create([FromBody] Product product)
-            {
-                try
-                {
-                    var productExists = await _context.Products.FirstOrDefaultAsync(p => p.Name == product.Name);
-                    if (productExists != null)
-                        return BadRequest(new { message = $"Produto {product.Name} já está cadastrado." });
-
-                    _context.Add(product);
-                    await _context.SaveChangesAsync();
 
                 return Ok(product);
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e.Message);
-                }
             }
-
-            [HttpPut("{productId}")]
-            public async Task<ActionResult<Product>> Update([FromRoute] int productId, [FromBody] Product product)
+            catch (Exception e)
             {
-                try
-                {
-                    if (productId != product.ProductId)
-                        throw new Exception("As informações enviadas estão divergentes.");
-
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-
-                    return Ok(product);
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e.Message);
-                }
-            }
-
-            [HttpDelete("{productId}")]
-            public async Task<ActionResult> Delete([FromRoute] int productId)
-            {
-                try
-                {
-                    var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
-                    _context.Products.Remove(product);
-                    await _context.SaveChangesAsync();
-
-                    return Ok();
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e.Message);
-                }
+                return NotFound(e.Message);
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Product>> Create([FromBody] ProductDto product)
+        {
+            try
+            {
+                var productExists = await _context.Products.FirstOrDefaultAsync(p => p.Name == product.Name);
+                if (productExists != null)
+                    return BadRequest(new { message = $"Produto {product.Name} já está cadastrado." });
+
+                Product newProduct = new Product(product.Name, product.Stock, product.Value);
+
+                _context.Add(newProduct);
+                await _context.SaveChangesAsync();
+
+                return Ok(newProduct);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("{productId}")]
+        public async Task<ActionResult<Product>> Update([FromRoute] int productId, [FromBody] ProductDto request)
+        {
+            try
+            {
+                if (productId != request.ProductId)
+                    throw new Exception("As informações enviadas estão divergentes.");
+
+                var productExists = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == request.ProductId);
+                if (productExists == null)
+                    return NotFound();
+
+                Product product = new Product(request.Name, request.Stock, request.Value);
+
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+
+                return Ok(product);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpDelete("{productId}")]
+        public async Task<ActionResult> Delete([FromRoute] int productId)
+        {
+            try
+            {
+                var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+                
+                if (product == null)
+                    return NotFound();
+
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+    }
 }
