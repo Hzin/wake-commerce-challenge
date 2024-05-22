@@ -52,6 +52,9 @@ Execute o comando para criar a base de dados "update-database"
 Para executar os testes unitários manualmente vá na aba Teste > Executar Todos os Testes ou com as teclas de atalho (Ctrl+R, A).
 Lembrando que os testes são executados automaticamente ao abrir um PR para a branch main ou realizar um push, é possível visualizar os testes na aba Actions no repositório do GitHub.
 
+# Status dos testes unitários
+[![build and test](https://github.com/Hzin/wake-commerce-challenge/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Hzin/wake-commerce-challenge/actions/workflows/build-and-test.yml)
+
 ## 🛠️ Construído com
 
 * [PostgreSQL](https://www.postgresql.org/) - Banco de dados
